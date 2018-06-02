@@ -1,7 +1,8 @@
 // NOTE: Application server configuration
 // Modules
 const express = require('express'),
-      bodyParser = require('body-parser')
+      bodyParser = require('body-parser'),
+      flash = require('connect-flash'),
       engines = require('consolidate'),       // template eng consolidation lib
       session = require('express-session'),
       mongoose = require('mongoose'),
@@ -9,7 +10,7 @@ const express = require('express'),
       morgan = require('morgan'),                        // http request logger
       mustache = require('mustache'),
       path = require('path'),
-      passport = require('./config/passport'),           // configured passport
+      // passport = require('./config/passport'),           // configured passport
       routes = require('./app/routes');                           // app routes
 
 // Constants
@@ -51,8 +52,9 @@ const app = express();
         })
       );
 
-      app.use(passport.initialize());
-      app.use(passport.session());
+      // app.use(passport.initialize());
+      // app.use(passport.session());
+      // app.use(flash());
 
       app.use(morgan('dev'));
 

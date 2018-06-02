@@ -1,6 +1,6 @@
 // NOTE: Model definition
 const mongoose = require('mongoose'),
-      passportPlugin = require('passport-local-mongoose');
+      argon2 = require('argon2');
 
 const userSchema = new mongoose.Schema({
   name       : { type: String, required: true },
@@ -8,8 +8,21 @@ const userSchema = new mongoose.Schema({
   password   : { type: String, required: true }
 });
 
-// uses pbkdf2 implementation with sha256 digest algorithm
-userSchema.plugin(passportPlugin);
+userSchema.pre('save', function(next){
+  let user = this;
+  argon2.hash(user.password)
+        .then(hash => {
+          user.password = hash;
+          next(null)
+        })
+        .catch(err => next(err))
+})
+
+userSchema.methods.validPassword = function(password, next){
+  argon2.verify(this.password, password)
+        .then(match => next(null, match))
+        .catch(err => next(err))
+}
 
 const User = mongoose.model('User', userSchema);
 
