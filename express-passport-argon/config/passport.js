@@ -1,7 +1,7 @@
 // NOTE: Passport configuration
-const passport = require('passport'),
-      LocalStrategy = require('passport-local').Strategy,
-      User = require('./../app/models');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const User = require('./../app/models');
 
 // sessions configuration
 passport.serializeUser((user, next) => next(null, user.id));

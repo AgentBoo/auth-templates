@@ -1,6 +1,7 @@
 // NOTE: Routes defined with express Router
 const express = require('express');
 const passport = require('./../config/passport');
+const User = require('./models');
 const router = express.Router();
 
 
@@ -16,13 +17,27 @@ router.post('/login', passport.authenticate('login', {
 
 router.get('/register', (req, res) => res.render('register'));
 // handle this using passport in order to immediately login after successful register
-router.post('/register', passport.authenticate('register', {
-  successRedirect: '/dashboard',
-  failureRedirect: '/register'
-}));
+router.post('/register', (req, res) => {
+  console.log(req.body)
+  User.create({
+    name: req.body.name,
+    email: req.body.email,
+    password: req.body.password
+  }, (err, user) => {
+    if(err){ console.error(err)}
+    console.log(user)
+  })
+  User.find((error, users) => {console.log(users), res.redirect('/register')})
+});
 
 // protected path
-router.get('/dashboard', passport.authenticate('login'), (req, res) => {
+router.get('/dashboard', (req, res) => {
+  console.log(req)
+  console.log(res.session)
+  console.log(req.cookie)
+  console.log(res.cookie)
+  console.log(req.isAuthenticated())
+  console.log(req.user)
   if(req.user){
     return res.render('dashboard', { user: req.user })
   }
@@ -32,8 +47,10 @@ router.get('/dashboard', passport.authenticate('login'), (req, res) => {
 )
 
 router.get('/logout', (req, res) => {
-  // req.logout() passport function
-  req.logout();
+  console.log(req)
+  // res.cookie('user', '', { expires: new Date() })
+  req.session.reset()
+  // req.logout();
   res.redirect('/');
 });
 

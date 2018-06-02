@@ -1,26 +1,27 @@
 // NOTE: Application server configuration
 // Modules
 const express = require('express'),
-      bodyParser = require('body-parser'),
+      bodyParser = require('body-parser')
       engines = require('consolidate'),       // template eng consolidation lib
-      flash = require('connect-flash'),
+      session = require('express-session'),
       mongoose = require('mongoose'),
+      MongoStore = require('connect-mongo')(session),
       morgan = require('morgan'),                        // http request logger
       mustache = require('mustache'),
       path = require('path'),
-      session = require('client-sessions'),
       passport = require('./config/passport'),           // configured passport
       routes = require('./app/routes');                           // app routes
 
 // Constants
 const port = process.env.PORT || 3000;
 const secret = process.env.SECRET;
-const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1/authtest';
+const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1/authtest';
 
 // Mongo configuration
 mongoose.Promise = global.Promise;
-mongoose.connect(uri);
-mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error'));
+mongoose.connect(mongoUri)
+        .then(() => console.log('MongoDB connection success'))
+        .catch(err => console.error('MongoDB connection error'));
 
 // Express app configuration
 const app = express();
@@ -34,24 +35,27 @@ const app = express();
       app.use(bodyParser.urlencoded({ extended: false }));
 
       app.use(session({
-          cookieName: 'user',             // important cookie name for passport
-          secret: secret,
-          duration: 1 * 60 * 60 * 1000,                       // duration in ms
-          activeDuration: 0.5 * 60 * 60 * 1000,
           cookie: {
             path: '/dashboard',
-            ephemeral: true,
+            maxAge: 1 * 60 * 60 * 1000,
             httpOnly: true,
             secure: false,
-          }
+          },
+          resave: false,
+          saveUninitialized: true,
+          secret: secret,
+          store: new MongoStore({
+            mongooseConnection: mongoose.connection,
+            touchAfter: 0.5 * 60 * 60 * 1000
+          })
         })
       );
-      app.use(flash());
+
       app.use(passport.initialize());
       app.use(passport.session());
 
       app.use(morgan('dev'));
-      
+
       app.use('/', routes);
 
       app.listen(port)

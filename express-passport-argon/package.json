@@ -1,6 +1,7 @@
 {
   "name": "authnode-boilerplate",
   "version": "1.0.0",
+  "private": true,
   "dependencies": {
     "argon2": "^0.19.2",
     "body-parser": "^1.18.3",

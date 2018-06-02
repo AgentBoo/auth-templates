@@ -9,7 +9,7 @@ const express = require('express'),
       mustache = require('mustache'),
       path = require('path'),
       session = require('client-sessions'),
-      passport = require('./config/passport'),           // configured passport 
+      passport = require('./config/passport'),           // configured passport
       routes = require('./app/routes');                           // app routes
 
 // Constants
@@ -20,7 +20,8 @@ const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1/authtest';
 // Mongo configuration
 mongoose.Promise = global.Promise;
 mongoose.connect(uri);
-mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error'));
+mongoose.connection.on('connected', () => console.log('Connected to MongoDB'))
+mongoose.connection.on('error', () => console.error('MongoDB connection error'));
 
 // Express app configuration
 const app = express();
@@ -28,7 +29,7 @@ const app = express();
       app.set('view engine', 'html');
       app.set('views', path.join(__dirname, 'views'));
 
-      app.use(express.static(path.join(__dirname, 'public'));
+      app.use(express.static(path.join(__dirname, 'public')));
 
       app.use(bodyParser.json());
       app.use(bodyParser.urlencoded({ extended: false }));
