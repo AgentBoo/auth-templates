@@ -10,7 +10,7 @@ const express = require('express'),
       morgan = require('morgan'),                        // http request logger
       mustache = require('mustache'),
       path = require('path'),
-      // passport = require('./config/passport'),           // configured passport
+      passport = require('./config/passport'),           // configured passport
       routes = require('./app/routes');                           // app routes
 
 // Constants
@@ -37,24 +37,24 @@ const app = express();
 
       app.use(session({
           cookie: {
-            path: '/dashboard',
-            maxAge: 1 * 60 * 60 * 1000,
+            path: '/',
+            maxAge: 1 * 60 * 60 * 1000,                      // in milliseconds
             httpOnly: true,
             secure: false,
           },
           resave: false,
           saveUninitialized: true,
           secret: secret,
-          store: new MongoStore({
+          store: new MongoStore({                     // default is MemoryStore
             mongooseConnection: mongoose.connection,
             touchAfter: 0.5 * 60 * 60 * 1000
           })
         })
       );
-
-      // app.use(passport.initialize());
-      // app.use(passport.session());
-      // app.use(flash());
+                                                        // set up in this order
+      app.use(flash());                 // sessions > flash > passport > routes
+      app.use(passport.initialize());
+      app.use(passport.session());
 
       app.use(morgan('dev'));
 
