@@ -2,31 +2,29 @@
 // Modules
 const express = require('express'),
       bodyParser = require('body-parser'),
+      sessions = require('client-sessions'),
       engines = require('consolidate'),       // template eng consolidation lib
-      flash = require('connect-flash'),
       mongoose = require('mongoose'),
-      morgan = require('morgan'),                        // http request logger
-      mustache = require('mustache'),
+      logger = require('morgan'),                        // http request logger
       path = require('path'),
-      session = require('client-sessions'),
       passport = require('./config/passport'),           // configured passport
-      routes = require('./app/routes');                           // app routes
+      routes = require('./app/routes');
 
-// Constants
+// constants
 const port = process.env.PORT || 3000;
 const secret = process.env.SECRET;
-const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1/authtest';
+const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1/authtest';
 
-// Mongo configuration
+// mongoose config
 mongoose.Promise = global.Promise;
-mongoose.connect(uri);
-mongoose.connection.on('connected', () => console.log('Connected to MongoDB'))
-mongoose.connection.on('error', () => console.error('MongoDB connection error'));
+mongoose.connect(mongoUri)
+        .then(() => console.log('MongoDB connection success'))
+        .catch(err => console.error('MongoDB connection error'));
 
-// Express app configuration
+// express app config
 const app = express();
-      app.engine('html', engines.mustache);           // consolidating mustache
-      app.set('view engine', 'html');
+      app.engine('mustache', engines.mustache);
+      app.set('view engine', 'mustache');
       app.set('views', path.join(__dirname, 'views'));
 
       app.use(express.static(path.join(__dirname, 'public')));
@@ -34,26 +32,23 @@ const app = express();
       app.use(bodyParser.json());
       app.use(bodyParser.urlencoded({ extended: false }));
 
-      app.use(session({
-          cookieName: 'user',             // important cookie name for passport
-          secret: secret,
-          duration: 1 * 60 * 60 * 1000,                       // duration in ms
-          activeDuration: 0.5 * 60 * 60 * 1000,
-          cookie: {
-            path: '/dashboard',
-            ephemeral: true,
-            httpOnly: true,
-            secure: false,
-          }
-        })
-      );
-      app.use(flash());
-      app.use(passport.initialize());
-      app.use(passport.session());
-
-      app.use(morgan('dev'));
+      app.use(sessions({
+        cookieName: 'user',     // 'user' cookie name is important for passport
+        secret: secret,
+        duration: 1 * 60 * 60 * 1000,                                  // in ms
+        activeDuration: 0.5 * 60 * 60 * 1000,                          // in ms
+        cookie: {
+          path: '/',
+          ephemeral: true,
+          httpOnly: true,
+          secure: false
+        }
+      }));
 
       app.use('/', routes);
+
+      app.use(logger('dev'));
+
       app.listen(port)
 
 

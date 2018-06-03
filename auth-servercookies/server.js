@@ -12,7 +12,7 @@ const express = require('express'),
       path = require('path'),
       passport = require('./config/passport'),           // configured passport
       protectedRoutes = require('./app/routes/protected'),        // app routes
-      publicRoutes = require('./app/routes/public');              // app routes 
+      publicRoutes = require('./app/routes/public');              // app routes
 
 // Constants
 const port = process.env.PORT || 3000;
