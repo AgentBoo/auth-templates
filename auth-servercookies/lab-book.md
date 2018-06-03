@@ -189,7 +189,10 @@ mongoose.connect(mongoUri)
 
 9. routes.js
 - add login and registration POST routes  
+  req.isAuthenticated() is not in the official documentation
+  https://github.com/jaredhanson/passport/blob/a892b9dc54dce34b7170ad5d73d8ccfba87f4fcf/lib/passport/http/request.js#L74
 - add logout route
+  http://www.passportjs.org/docs/logout/
 
 
 10. bootstrap

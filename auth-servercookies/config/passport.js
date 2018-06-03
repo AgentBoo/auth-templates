@@ -17,10 +17,18 @@ passport.use('login', new LocalStrategy({ passReqToCallback: true},
       if(!user){
         return next(null, false, req.flash('loginError', 'Incorrect username'))
       }
-      if(!user.validPassword(password)){
+
+      user.verify(password, (result) => {
+        if(result instanceof Error){
+          return next(null, false, req.flash('loginError', 'Something went wrong'))
+        }
+
+        if(result){
+          return next(null, user)
+        }
+
         return next(null, false, req.flash('loginError', 'Incorrect password'))
-      }
-      return next(null, user)
+      })
   })
 }));
 

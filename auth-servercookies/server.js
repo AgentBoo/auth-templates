@@ -11,7 +11,8 @@ const express = require('express'),
       mustache = require('mustache'),
       path = require('path'),
       passport = require('./config/passport'),           // configured passport
-      routes = require('./app/routes');                           // app routes
+      protectedRoutes = require('./app/routes/protected'),        // app routes
+      publicRoutes = require('./app/routes/public');              // app routes 
 
 // Constants
 const port = process.env.PORT || 3000;
@@ -58,8 +59,8 @@ const app = express();
 
       app.use(morgan('dev'));
 
-      app.use('/', routes);
-
+      app.use('/', publicRoutes);
+      app.use('/app', protectedRoutes);
       app.listen(port)
 
 
