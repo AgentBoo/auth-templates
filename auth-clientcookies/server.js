@@ -3,6 +3,7 @@
 const express = require('express'),
       bodyParser = require('body-parser'),
       sessions = require('client-sessions'),
+      flash = require('connect-flash'),
       engines = require('consolidate'),       // template eng consolidation lib
       mongoose = require('mongoose'),
       logger = require('morgan'),                        // http request logger
@@ -33,7 +34,7 @@ const app = express();
       app.use(bodyParser.urlencoded({ extended: false }));
 
       app.use(sessions({
-        cookieName: 'user',     // 'user' cookie name is important for passport
+        cookieName: 'session',    // 'session' cookie name required (README.md)
         secret: secret,
         duration: 1 * 60 * 60 * 1000,                                  // in ms
         activeDuration: 0.5 * 60 * 60 * 1000,                          // in ms
@@ -45,11 +46,15 @@ const app = express();
         }
       }));
 
+      app.use(flash());
+      app.use(passport.initialize());
+      app.use(passport.session());
+
       app.use('/', routes);
 
       app.use(logger('dev'));
 
-      app.listen(port)
+      app.listen(port);
 
 
 // shoutout...

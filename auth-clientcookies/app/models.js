@@ -24,7 +24,7 @@ userSchema.pre('save', function(next){
         })
 });
 
-// checking if password is valid
+// check if password is valid
 userSchema.methods.verify = function(password, next){
     argon2.verify(this.password, password)
           .then(match => next(match))

@@ -10,7 +10,7 @@ This setup is based on the [Easy Node Authentication tutorial on Scotch](https:/
   * views and assets are different from the original tutorial, including the use of a different template engine
 
   * instead of defining a specific passport strategy and mongoose instance methods, the use of [passport-local-mongoose](https://github.com/saintedlama/passport-local-mongoose) should be considered
-  
+
 #### Sources:
 * [Easy Node Authentication](https://github.com/scotch-io/easy-node-authentication/tree/local)
 * [Addendum on authentications](https://hackernoon.com/your-node-js-authentication-tutorial-is-wrong-f1a3bf831a46)
