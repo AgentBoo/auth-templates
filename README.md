@@ -1,5 +1,3 @@
-# auth-templates
-
 ## Authentication boilerplates 
 This is a collection of my attempts at authentication boilerplates for Node, Django, and Rails apps. 
 
